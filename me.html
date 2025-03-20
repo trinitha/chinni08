@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-gap: 10px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .flipped {
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="game"></div>
+    <script>
+        const icons = ['🍎', '🍌', '🍇', '🍉', '🍒', '🍓', '🥝', '🍍'];
+        let cards = [...icons, ...icons];
+        cards.sort(() => Math.random() - 0.5);
+
+        const gameContainer = document.getElementById("game");
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+
+        function createCard(icon) {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.dataset.icon = icon;
+            card.addEventListener("click", flipCard);
+            gameContainer.appendChild(card);
+        }
+
+        function flipCard() {
+            if (lockBoard || this === firstCard) return;
+            
+            this.textContent = this.dataset.icon;
+            this.classList.add("flipped");
+            
+            if (!firstCard) {
+                firstCard = this;
+                return;
+            }
+            
+            secondCard = this;
+            lockBoard = true;
+            
+            if (firstCard.dataset.icon === secondCard.dataset.icon) {
+                resetCards(true);
+            } else {
+                setTimeout(() => resetCards(false), 1000);
+            }
+        }
+
+        function resetCards(match) {
+            if (!match) {
+                firstCard.textContent = "";
+                secondCard.textContent = "";
+                firstCard.classList.remove("flipped");
+                secondCard.classList.remove("flipped");
+            }
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+        }
+
+        cards.forEach(icon => createCard(icon));
+    </script>
+</body>
+</html>
